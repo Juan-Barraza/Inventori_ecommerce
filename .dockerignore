@@ -1,0 +1,22 @@
+# Binaries
+go-execute
+
+# OS files
+.DS_Store
+
+# Vendor
+vendor/
+
+# Dependency directories
+pkg/mod
+
+# GoLand project files
+.idea
+.vscode/
+
+# Other ignored files
+*.log
+
+# Ignorar archivos de control de versiones
+.git
+.gitignore
