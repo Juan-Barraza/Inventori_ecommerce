@@ -15,7 +15,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go binary from the main.go in cmd/api
-RUN go build -o /app/go-execute ./cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/go-execute ./cmd/main.go
 
 # Stage 2: Run the application using a smaller base image
 FROM alpine:latest
