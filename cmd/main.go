@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"inventory/internal/config"
-	"inventory/internal/fiber/routes"
+	"inventory/routes"
 	"inventory/pkg"
 	"log"
 	"os"

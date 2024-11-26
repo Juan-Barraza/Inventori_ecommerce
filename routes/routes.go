@@ -7,5 +7,7 @@ import (
 )
 
 func SetRoutes(app *fiber.App, db *pkg.Database) {
-	
+	SetUserRoutes(app,db)
+	//Apiv1 := app.Group("api/v1")
+
 }
