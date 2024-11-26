@@ -16,6 +16,13 @@ func CreateTables() (*pkg.Database, error) {
 
 	migratesErr := db.DB.AutoMigrate(
 		&modelsgorm.User{},
+		&modelsgorm.Provider{},
+		&modelsgorm.Client{},
+		&modelsgorm.Category{},
+		&modelsgorm.Product{},
+		&modelsgorm.PicturesProduct{},
+		&modelsgorm.Order{},
+		&modelsgorm.Transaction{},
 	)
 
 	if migratesErr != nil {
