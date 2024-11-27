@@ -7,7 +7,7 @@ type Client struct {
 	Name           string `gorm:"not null"`
 	LastName       string `gorm:"not null"`
 	TypeDocument   string
-	DocumentNumber string
+	DocumentNumber string `gorm:"unique;not null"`
 	PhoneNumber    string `gorm:"not null"`
 	Address        string
 	UserID         uint
@@ -19,6 +19,8 @@ type ClientJson struct {
 	Name           string
 	LastName       string
 	TypeDocument   string
+	Email          string
+	Password       string
 	DocumentNumber string
 	PhoneNumber    string
 	Address        string

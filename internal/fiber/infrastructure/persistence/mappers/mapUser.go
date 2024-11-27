@@ -13,6 +13,6 @@ func ToUserGorm(u *domain.User) *modelsgorm.User {
 	return user
 }
 
-func FromUserGorm(ug *modelsgorm.User) domain.User {
-	return domain.User{Email: ug.Email, Password: ug.Password}
+func FromUserGorm(ug *modelsgorm.User) *domain.User {
+	return &domain.User{Email: ug.Email, Password: ug.Password}
 }

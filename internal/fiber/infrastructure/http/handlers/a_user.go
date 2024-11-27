@@ -4,6 +4,7 @@ import (
 	"inventory/internal/fiber/application"
 	domain "inventory/internal/fiber/domain/models"
 	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
+	"inventory/pkg/utils"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -24,10 +25,13 @@ func (h *UserHandler) Register(c fiber.Ctx) error {
 			"error": "error al crear user",
 		})
 	}
-
+	password, err := utils.HashPassword(userData.Password)
+	if err != nil {
+		return err
+	}
 	user := domain.User{
 		Email:    userData.Email,
-		Password: userData.Password,
+		Password: password,
 	}
 
 	if err := h.userService.RegisterUser(user); err != nil {

@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"inventory/internal/config"
-	"inventory/routes"
+	"inventory/internal/fiber/infrastructure/http/routes"
 	"inventory/pkg"
 	"log"
 	"os"
@@ -22,18 +22,18 @@ func main() {
 	if err != nil {
 		log.Fatal("error al configurar fiber")
 	}
-	routes.SetRoutes(app,db)
+	routes.SetRoutes(app, db)
 
 	contx, sleep := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer sleep()
 
-	go func ()  {
+	go func() {
 		if err := app.Listen(":8000"); err != nil {
 			log.Fatalf("no se pudo iniciar el servidor: %v", err)
 		}
 	}()
 
-	<- contx.Done()
+	<-contx.Done()
 	log.Println("interruption signal")
 
 	time.Sleep(3 * time.Second)

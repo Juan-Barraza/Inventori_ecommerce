@@ -17,8 +17,9 @@ func ToClientGorm(c *domain.Client) *modelsgorm.Client {
 	}
 }
 
-func FromlientGorm(c *modelsgorm.Client) *domain.Client {
+func FromClientGorm(c *modelsgorm.Client) *domain.Client {
 	return &domain.Client{
+		ID:             c.ID,
 		Name:           c.Name,
 		LastName:       c.LastName,
 		TypeDocument:   c.TypeDocument,
@@ -26,5 +27,9 @@ func FromlientGorm(c *modelsgorm.Client) *domain.Client {
 		PhoneNumber:    c.PhoneNumber,
 		Address:        c.Address,
 		UserID:         c.UserID,
+		User: domain.User{
+			Email:    c.User.Email,
+			Password: "",
+		},
 	}
 }
