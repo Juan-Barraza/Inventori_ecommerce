@@ -8,9 +8,9 @@ import (
 
 type Order struct {
 	gorm.Model
-	Status      string
-	Quantity    int
-	Date        time.Time
+	Status      string    `gorm:"not null"`
+	Quantity    int       `gorm:"not null"`
+	Date        time.Time `gorm:"not null"`
 	Description string
 	ClientId    uint
 	Client      Client    `gorm:"foreignKey:ClientId"`

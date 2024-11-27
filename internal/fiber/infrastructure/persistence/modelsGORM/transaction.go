@@ -8,9 +8,9 @@ import (
 
 type Transaction struct {
 	gorm.Model
-	Status   string
-	Amount   float64
-	Currency string
+	Status   string  `gorm:"not null"`
+	Amount   float64 `gorm:"not null"`
+	Currency string  `gorm:"not null"`
 	Date     time.Time
 	OrderId  uint
 	Order    Order `gorm:"foreignKey:OrderId"`

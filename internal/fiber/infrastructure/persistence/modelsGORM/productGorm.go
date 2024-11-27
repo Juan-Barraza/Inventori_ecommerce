@@ -8,11 +8,11 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name        string
+	Name        string `gorm:"index,not null"`
 	Description string
-	Price       float64
+	Price       float64           `gorm:"not null"`
 	Images      []PicturesProduct `gorm:"foreignKey:ProductId"`
-	Stock       int
+	Stock       int               `gorm:"not null"`
 	CategoryId  uint
 	Category    Category `gorm:"foreignKey:CategoryId"`
 	ProviderId  uint

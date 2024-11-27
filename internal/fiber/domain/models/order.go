@@ -7,5 +7,5 @@ type Order struct {
 	Quantity    int
 	Date        time.Time
 	Description string
-	Client
+	ClientId    uint
 }

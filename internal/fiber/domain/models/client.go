@@ -7,5 +7,5 @@ type Client struct {
 	DocumentNumber string
 	PhoneNumber    string
 	Address        string
-	User
+	UserID         uint
 }

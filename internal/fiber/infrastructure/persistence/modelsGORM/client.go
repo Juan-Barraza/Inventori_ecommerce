@@ -4,11 +4,11 @@ import "gorm.io/gorm"
 
 type Client struct {
 	gorm.Model
-	Name           string
-	LastName       string
+	Name           string `gorm:"not null"`
+	LastName       string `gorm:"not null"`
 	TypeDocument   string
 	DocumentNumber string
-	PhoneNumber    string
+	PhoneNumber    string `gorm:"not null"`
 	Address        string
 	UserID         uint
 	User           User `gorm:"foreignKey:UserID"`

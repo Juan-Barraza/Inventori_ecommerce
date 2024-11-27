@@ -7,5 +7,5 @@ type Transaction struct {
 	Amount   float64
 	Currency string
 	Date     time.Time
-	Order
+	OrderId  uint
 }

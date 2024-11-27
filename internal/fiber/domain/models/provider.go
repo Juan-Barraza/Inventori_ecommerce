@@ -5,5 +5,5 @@ type Provider struct {
 	Address       string
 	PhoneNumber   string
 	TypeOfProduct string
-	User
+	UserId        uint
 }

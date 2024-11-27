@@ -1,13 +1,11 @@
 package domain
 
-import "image"
-
 type Product struct {
 	Name        string
 	Description string
 	Price       float64
-	Image       image.Image
+	Images      []PicturesProduct
 	Stock       int
-	Category
-	Provider
+	CategoryId  uint
+	ProviderId  uint
 }
