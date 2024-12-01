@@ -1,7 +1,7 @@
 package repository
 
 import (
-	domain "inventory/internal/fiber/domain/models"
+	domain "inventory/internal/fiber/domain/entities"
 	"inventory/internal/fiber/infrastructure/persistence/mappers"
 	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
 	"inventory/pkg"
@@ -34,7 +34,7 @@ func (r *ClientRepository) GetAll() ([]domain.Client, error) {
 	return clients, nil
 }
 
-func (r *ClientRepository) GetById(id int) (*domain.Client, error) {
+func (r *ClientRepository) GetById(id uint) (*domain.Client, error) {
 	var clientGorm modelsgorm.Client
 
 	err := r.db.DB.Model(modelsgorm.Client{}).Preload("User").First(&clientGorm, id).Error
@@ -46,6 +46,18 @@ func (r *ClientRepository) GetById(id int) (*domain.Client, error) {
 
 	return client, nil
 
+}
+
+func (r *ClientRepository) Update(cli *domain.Client) error {
+	client := mappers.ToClientGorm(cli)
+
+	return r.db.DB.Model(&client).Where("id = ?", client.ID).Updates(client).Error
+}
+
+func (r *ClientRepository) Delete(cli *domain.Client) error {
+	client := mappers.ToClientGorm(cli)
+	client.ID = cli.ID
+	return r.db.DB.Unscoped().Delete(client).Error
 }
 
 func (r *ClientRepository) FindByDocumentNumber(documentNumber string) (*domain.Client, error) {

@@ -1,7 +1,7 @@
 package application
 
 import (
-	domain "inventory/internal/fiber/domain/models"
+	domain "inventory/internal/fiber/domain/entities"
 	"inventory/internal/fiber/domain/repositories"
 )
 

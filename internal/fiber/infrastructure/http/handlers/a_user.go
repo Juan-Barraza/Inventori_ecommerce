@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"inventory/internal/fiber/application"
-	domain "inventory/internal/fiber/domain/models"
+	domain "inventory/internal/fiber/domain/entities"
 	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
 	"inventory/pkg/utils"
 

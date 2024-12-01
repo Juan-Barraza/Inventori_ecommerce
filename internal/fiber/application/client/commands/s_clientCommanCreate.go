@@ -1,9 +1,9 @@
-package application
+package commands
 
 import (
 	"errors"
 	"fmt"
-	domain "inventory/internal/fiber/domain/models"
+	domain "inventory/internal/fiber/domain/entities"
 	"inventory/internal/fiber/domain/repositories"
 	"inventory/pkg/utils"
 	"log"
@@ -11,20 +11,20 @@ import (
 	"gorm.io/gorm"
 )
 
-type ClientService struct {
+type CreateClientCommandsService struct {
 	clientRepo repositories.IClientRepository
 	userRepo   repositories.IUserRepository
 }
 
-func NewClientService(clientRepo repositories.IClientRepository,
-	userRepo repositories.IUserRepository) *ClientService {
-	return &ClientService{
+func NewClientCommandsService(clientRepo repositories.IClientRepository,
+	userRepo repositories.IUserRepository) *CreateClientCommandsService {
+	return &CreateClientCommandsService{
 		clientRepo: clientRepo,
 		userRepo:   userRepo,
 	}
 }
 
-func (s *ClientService) CreateClient(client *domain.Client) error {
+func (s *CreateClientCommandsService) CreateClient(client *domain.Client) error {
 	userExist, err := s.userRepo.FindByEmail(client.User.Email)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
@@ -69,8 +69,4 @@ func (s *ClientService) CreateClient(client *domain.Client) error {
 	}
 
 	return nil
-}
-
-func (s *ClientService) GetAll() ([]domain.Client, error) {
-	return s.clientRepo.GetAll()
 }

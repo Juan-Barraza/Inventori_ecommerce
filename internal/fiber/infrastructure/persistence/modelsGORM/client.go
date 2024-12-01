@@ -11,7 +11,7 @@ type Client struct {
 	PhoneNumber    string `gorm:"not null"`
 	Address        string
 	UserID         uint
-	User           User `gorm:"foreignKey:UserID"`
+	User           User `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type ClientJson struct {

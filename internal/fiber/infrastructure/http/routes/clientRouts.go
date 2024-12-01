@@ -1,7 +1,8 @@
 package routes
 
 import (
-	"inventory/internal/fiber/application"
+	"inventory/internal/fiber/application/client/commands"
+	"inventory/internal/fiber/application/client/queries"
 	"inventory/internal/fiber/infrastructure/http/handlers"
 	"inventory/internal/fiber/infrastructure/persistence/repository"
 	"inventory/pkg"
@@ -12,11 +13,19 @@ import (
 func SetClientRoutes(apiV1 fiber.Router, db *pkg.Database) {
 	userRepo := repository.NewUserRepository(db)
 	clientRepo := repository.NewClientRepository(db)
-	clientService := application.NewClientService(clientRepo, userRepo)
+	createClientS := commands.NewClientCommandsService(clientRepo, userRepo)
+	updateClientS := commands.NewUpdateClientCommandsService(clientRepo, userRepo)
+	deleteClientS := commands.NewDeleteClientCommandsService(clientRepo, userRepo)
+	getAllClientS := queries.NewClientQuerysService(clientRepo)
 	clientHandler := handlers.NewClientHandler(
-		clientService,
+		createClientS,
+		updateClientS,
+		deleteClientS,
+		getAllClientS,
 	)
 
 	apiV1.Post("/clients", clientHandler.CreateClient)
 	apiV1.Get("/clients", clientHandler.GetAllClients)
+	apiV1.Put("/clients/:id", clientHandler.ClientUpdate)
+	apiV1.Delete("/clients/:id", clientHandler.ClientDelete)
 }

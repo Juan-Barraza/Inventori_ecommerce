@@ -1,7 +1,7 @@
 package mappers
 
 import (
-	domain "inventory/internal/fiber/domain/models"
+	domain "inventory/internal/fiber/domain/entities"
 	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
 )
 

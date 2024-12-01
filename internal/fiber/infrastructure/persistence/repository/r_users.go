@@ -1,7 +1,7 @@
 package repository
 
 import (
-	domain "inventory/internal/fiber/domain/models"
+	domain "inventory/internal/fiber/domain/entities"
 	"inventory/internal/fiber/infrastructure/persistence/mappers"
 	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
 	"inventory/pkg"
@@ -37,6 +37,30 @@ func (r *UserRepository) GetAll() ([]domain.User, error) {
 	}
 
 	return users, nil
+}
+
+func (r *UserRepository) Update(usr *domain.User) error {
+	user := mappers.ToUserGorm(usr)
+	user.ID = usr.ID
+	return r.db.DB.Save(&user).Error
+}
+
+func (r *UserRepository) Delete(us *domain.User) error {
+	user := mappers.ToUserGorm(us)
+	user.ID = us.ID
+	return r.db.DB.Unscoped().Delete(user).Error
+}
+
+func (r *UserRepository) FindByID(id uint) (*domain.User, error) {
+	var userGorm *modelsgorm.User
+
+	if err := r.db.DB.Model(modelsgorm.User{}).First(&userGorm, id).Error; err != nil {
+		return nil, err
+	}
+
+	user := mappers.FromUserGorm(userGorm)
+
+	return user, nil
 }
 
 func (r *UserRepository) FindByEmail(email string) (*domain.User, error) {
