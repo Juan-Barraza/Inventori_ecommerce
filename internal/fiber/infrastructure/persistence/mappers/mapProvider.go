@@ -11,7 +11,7 @@ func ToProviderGorm(p *domain.Provider) *modelsgorm.Provider {
 		Address:       p.Address,
 		PhoneNumber:   p.PhoneNumber,
 		TypeOfProduct: p.TypeOfProduct,
-		UserID:        p.UserId,
+		UserID:        p.UserID,
 	}
 }
 
@@ -21,6 +21,10 @@ func FromProviderGorm(p *modelsgorm.Provider) *domain.Provider {
 		Address:       p.Address,
 		PhoneNumber:   p.PhoneNumber,
 		TypeOfProduct: p.TypeOfProduct,
-		UserId:        p.UserID,
+		UserID:        p.UserID,
+		User: domain.User{
+			Email:    p.User.Email,
+			Password: p.User.Password,
+		},
 	}
 }
