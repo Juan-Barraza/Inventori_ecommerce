@@ -50,7 +50,7 @@ func (r *ClientRepository) GetById(id uint) (*domain.Client, error) {
 
 func (r *ClientRepository) Update(cli *domain.Client) error {
 	client := mappers.ToClientGorm(cli)
-
+	client.ID = cli.ID
 	return r.db.DB.Model(&client).Where("id = ?", client.ID).Updates(client).Error
 }
 

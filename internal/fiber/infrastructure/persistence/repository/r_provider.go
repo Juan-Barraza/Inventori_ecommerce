@@ -50,7 +50,7 @@ func (r *ProviderRepository) GetById(id uint) (*domain.Provider, error) {
 
 func (r *ProviderRepository) Update(prov *domain.Provider) error {
 	provider := mappers.ToProviderGorm(prov)
-
+	provider.ID = prov.ID
 	return r.db.DB.Model(&provider).Where("id = ?", provider.ID).Updates(provider).Error
 }
 
