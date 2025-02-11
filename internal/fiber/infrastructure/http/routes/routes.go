@@ -8,6 +8,7 @@ import (
 )
 
 func SetRoutes(app *fiber.App, db *pkg.Database) {
+	app.Use(middleware.PaginationMiddleware)
 	SetUserRoutes(app, db)
 	Apiv1 := app.Group("api/v1")
 	SetClientRoutes(Apiv1, db)
