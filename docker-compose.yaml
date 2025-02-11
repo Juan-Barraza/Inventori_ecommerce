@@ -9,14 +9,6 @@ services:
     platform: linux/amd64
     ports:
       - '8000:8000'
-    develop:
-      watch:
-        - action: rebuild
-          path: ./
-          files:
-            - ./**/*.go
-            - ./go.mod
-            - ./go.sum
     depends_on:
       - db
     env_file:

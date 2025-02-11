@@ -5,6 +5,8 @@ import (
 	"inventory/internal/fiber/infrastructure/persistence/mappers"
 	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
 	"inventory/pkg"
+
+	"gorm.io/gorm"
 )
 
 type ProviderRepository struct {
@@ -20,18 +22,10 @@ func (r *ProviderRepository) CreateProvider(prov *domain.Provider) error {
 	return r.db.DB.Create(client).Error
 }
 
-func (r *ProviderRepository) GetAllProvider() ([]domain.Provider, error) {
-	var providersGorm []modelsgorm.Provider
-	var providers []domain.Provider
-	err := r.db.DB.Preload("User").Find(&providersGorm).Error
-	if err != nil {
-		return nil, err
-	}
-	for _, provider := range providersGorm {
-		providers = append(providers, *mappers.FromProviderGorm(&provider))
-	}
+func (r *ProviderRepository) GetAllProvider() (*gorm.DB, error) {
+	query := r.db.DB.Model(&modelsgorm.Provider{}).Preload("User")
 
-	return providers, nil
+	return query, nil
 }
 
 func (r *ProviderRepository) GetById(id uint) (*domain.Provider, error) {

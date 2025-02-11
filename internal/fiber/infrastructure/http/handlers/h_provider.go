@@ -5,6 +5,7 @@ import (
 	provider "inventory/internal/fiber/application/provider/queries"
 	domain "inventory/internal/fiber/domain/entities"
 	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
+	"inventory/pkg/utils"
 	"strconv"
 
 	"github.com/gofiber/fiber/v3"
@@ -58,14 +59,19 @@ func (h *ProviderHandler) CreateProvider(c fiber.Ctx) error {
 }
 
 func (h *ProviderHandler) GetAllProvider(c fiber.Ctx) error {
-	provider, err := h.getallProviderService.GetALL()
+	pagination := c.Locals("pagination").(*utils.Pagination)
+
+	providers, err := h.getallProviderService.GetALL(pagination)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
+	if providers == nil {
+		return c.Status(200).JSON(make([]domain.Provider, 0))
+	}
 
-	return c.Status(200).JSON(provider)
+	return c.Status(200).JSON(providers)
 }
 
 func (h *ProviderHandler) ProviderUpdate(c fiber.Ctx) error {

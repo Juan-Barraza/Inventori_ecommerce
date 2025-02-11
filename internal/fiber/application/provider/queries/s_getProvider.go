@@ -4,27 +4,45 @@ import (
 	"fmt"
 	domain "inventory/internal/fiber/domain/entities"
 	"inventory/internal/fiber/domain/repositories"
+	"inventory/internal/fiber/infrastructure/persistence/mappers"
+	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
+	"inventory/internal/fiber/infrastructure/persistence/repository"
+	"inventory/pkg/utils"
 )
 
 type GetProviderService struct {
-	proviRepo repositories.IProviderRepository
+	proviRepo     repositories.IProviderRepository
+	paginationRep *repository.PaginationRepository
 }
 
-func NewGetProviderService(proviRepo repositories.IProviderRepository) *GetProviderService {
+func NewGetProviderService(proviRepo repositories.IProviderRepository,
+	paginationRep *repository.PaginationRepository) *GetProviderService {
 	return &GetProviderService{
-		proviRepo: proviRepo,
+		proviRepo:     proviRepo,
+		paginationRep: paginationRep,
 	}
 }
 
-func (s *GetProviderService) GetALL() ([]domain.Provider, error) {
-	provider, err := s.proviRepo.GetAllProvider()
+func (s *GetProviderService) GetALL(pagination *utils.Pagination) (*utils.Pagination, error) {
+	query, err := s.proviRepo.GetAllProvider()
 	if err != nil {
 		return nil, fmt.Errorf("error to get provider")
 	}
+	var providersGorm []modelsgorm.Provider
 
-	if provider == nil {
-		provider = []domain.Provider{}
+	paginationResult, err := s.paginationRep.GetPaginatedResults(query, pagination, &providersGorm)
+	if err != nil {
+		return nil, fmt.Errorf("error to get pagintaion")
 	}
 
-	return provider, nil
+	providers := make([]domain.Provider, 0, len(providersGorm))
+	for _, providerGorm := range providersGorm {
+		mapped := mappers.FromProviderGorm(&providerGorm)
+		if mapped != nil {
+			providers = append(providers, *mapped)
+		}
+	}
+	paginationResult.Data = providers
+
+	return paginationResult, nil
 }

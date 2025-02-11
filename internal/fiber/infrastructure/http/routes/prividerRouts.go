@@ -11,10 +11,11 @@ import (
 )
 
 func SetProviderRoutes(apiV1 fiber.Router, db *pkg.Database) {
+	paginationRep := repository.NewPaginationRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	providerRepo := repository.NewProviderRepsoitor(db)
 	createProvider := commands.NewCreateProviderService(providerRepo, userRepo)
-	getProvider := provider.NewGetProviderService(providerRepo)
+	getProvider := provider.NewGetProviderService(providerRepo, paginationRep)
 	updateProvider := commands.NewUpdateProviderService(providerRepo, userRepo)
 	deleteProvider := commands.NewDeleteProviderService(providerRepo, userRepo)
 	handlerProvider := handlers.NewHandlerProvider(createProvider,
