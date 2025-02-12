@@ -4,7 +4,6 @@ import (
 	"inventory/internal/fiber/application/client/commands"
 	"inventory/internal/fiber/application/client/queries"
 	domain "inventory/internal/fiber/domain/entities"
-	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
 	"strconv"
 
 	"github.com/gofiber/fiber/v3"
@@ -32,7 +31,7 @@ func NewClientHandler(createclientService *commands.CreateClientCommandsService,
 }
 
 func (h *ClienHandler) CreateClient(c fiber.Ctx) error {
-	var clientData *modelsgorm.ClientJson
+	var clientData *domain.ClientJson
 	if err := c.Bind().Body(&clientData); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "JSON not serializable",
@@ -79,7 +78,7 @@ func (h *ClienHandler) ClientUpdate(c fiber.Ctx) error {
 			"error": "ID invalido del cliente",
 		})
 	}
-	var clientData modelsgorm.ClientJson
+	var clientData domain.ClientJson
 	if err := c.Bind().Body(&clientData); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"error": "JSON not serializer",

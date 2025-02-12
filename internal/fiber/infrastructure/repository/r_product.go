@@ -1,9 +1,8 @@
 package repository
 
 import (
+	"errors"
 	domain "inventory/internal/fiber/domain/entities"
-	"inventory/internal/fiber/infrastructure/persistence/mappers"
-	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
 	"inventory/pkg"
 
 	"gorm.io/gorm"
@@ -18,14 +17,12 @@ func NewProductRespository(db *pkg.Database) *ProductRepository {
 }
 
 func (r *ProductRepository) AddProduct(product *domain.Product) error {
-	productGorm := mappers.ToProductGorm(product)
-	return r.db.DB.Create(productGorm).Error
+	return r.db.DB.Create(product).Error
 }
 
 func (r *ProductRepository) GetAllProducts(category string, providerId uint) (*gorm.DB, []domain.Product, error) {
-	var productsGorm []modelsgorm.Product
 	var products []domain.Product
-	query := r.db.DB.Model(&modelsgorm.Product{}).Preload("Category").
+	query := r.db.DB.Model(&domain.Product{}).Preload("Category").
 		Preload("Provider").
 		Order("id asc")
 	if category != "" {
@@ -36,29 +33,39 @@ func (r *ProductRepository) GetAllProducts(category string, providerId uint) (*g
 		query = query.Where("provider_id = ?", providerId)
 	}
 
-	if err := query.Find(&productsGorm); err != nil {
+	if err := query.Find(&products); err != nil {
 		return nil, nil, err.Error
-	}
-
-	for _, product := range productsGorm {
-		products = append(products, *mappers.FromProductGorm(&product))
 	}
 
 	return query, products, nil
 }
 
 func (r *ProductRepository) GetById(id uint) (*domain.Product, error) {
-	var producGorm modelsgorm.Product
-	if err := r.db.DB.Model(&modelsgorm.Product{}).Preload("Provider").Preload("Category").First(&producGorm); err != nil {
+	var product *domain.Product
+	if err := r.db.DB.Model(&domain.Product{}).Preload("Provider").Preload("Category").First(&product); err != nil {
 		return nil, err.Error
 	}
-	product := mappers.FromProductGorm(&producGorm)
 
 	return product, nil
 }
 
-func (r *ProductRepository) DeleteProduc(prod *domain.Product) error {
-	product := mappers.ToProductGorm(prod)
-	product.ID = prod.ID
+func (r *ProductRepository) ValidateUniqueProduct(prod *domain.Product) error {
+	var count int64
+
+	err := r.db.DB.Model(&domain.Product{}).
+		Where("name ILIKE = ? AND category_id = ? AND provider_id = ?", "%"+prod.Name+"%", prod.CategoryId, prod.ProviderId).
+		Count(&count).Error
+	if err != nil {
+		return err
+	}
+
+	if count > 0 {
+		return errors.New("already exist this product in any category and provider")
+	}
+
+	return nil
+}
+
+func (r *ProductRepository) DeleteProduct(product *domain.Product) error {
 	return r.db.DB.Unscoped().Delete(product).Error
 }

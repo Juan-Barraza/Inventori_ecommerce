@@ -4,7 +4,6 @@ import (
 	"inventory/internal/fiber/application/provider/commands"
 	provider "inventory/internal/fiber/application/provider/queries"
 	domain "inventory/internal/fiber/domain/entities"
-	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
 	"inventory/pkg/utils"
 	"strconv"
 
@@ -31,7 +30,7 @@ func NewHandlerProvider(createProvider *commands.CreateProviderService,
 }
 
 func (h *ProviderHandler) CreateProvider(c fiber.Ctx) error {
-	var providerData modelsgorm.ProviderJson
+	var providerData domain.ProviderJson
 	if err := c.Bind().Body(&providerData); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"error": "error to parse JSON",
@@ -81,7 +80,7 @@ func (h *ProviderHandler) ProviderUpdate(c fiber.Ctx) error {
 			"error": "ID not valid",
 		})
 	}
-	var providerJson modelsgorm.ProviderJson
+	var providerJson domain.ProviderJson
 	if err = c.Bind().Body(&providerJson); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"error": "error to parse JSON",

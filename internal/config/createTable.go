@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
+	domain "inventory/internal/fiber/domain/entities"
 	"inventory/pkg"
 	"log"
 	"os"
@@ -15,14 +15,14 @@ func CreateTables() (*pkg.Database, error) {
 	}
 
 	migratesErr := db.DB.AutoMigrate(
-		&modelsgorm.User{},
-		&modelsgorm.Provider{},
-		&modelsgorm.Client{},
-		&modelsgorm.Category{},
-		&modelsgorm.Product{},
-		&modelsgorm.PicturesProduct{},
-		&modelsgorm.Order{},
-		&modelsgorm.Transaction{},
+		&domain.User{},
+		&domain.Provider{},
+		&domain.Client{},
+		&domain.Category{},
+		&domain.Product{},
+		&domain.PicturesProduct{},
+		&domain.Order{},
+		&domain.Transaction{},
 	)
 
 	if migratesErr != nil {
