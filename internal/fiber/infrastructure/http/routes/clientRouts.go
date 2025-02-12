@@ -4,7 +4,7 @@ import (
 	"inventory/internal/fiber/application/client/commands"
 	"inventory/internal/fiber/application/client/queries"
 	"inventory/internal/fiber/infrastructure/http/handlers"
-	"inventory/internal/fiber/infrastructure/persistence/repository"
+	"inventory/internal/fiber/infrastructure/repository"
 	"inventory/pkg"
 
 	"github.com/gofiber/fiber/v3"

@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
+	domain "inventory/internal/fiber/domain/entities"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -10,7 +10,7 @@ import (
 
 var secretKey = []byte("JWT-TOKEN-GO")
 
-func CreateToken(user modelsgorm.UserGormJson, cantDuration int) (string, error) {
+func CreateToken(user domain.UserGormJson, cantDuration int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"username": string(user.ID),

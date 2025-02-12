@@ -1,13 +1,42 @@
 package domain
 
+import "gorm.io/gorm"
+
 type Client struct {
+	gorm.Model
+	Name           string `gorm:"not null"`
+	LastName       string `gorm:"not null"`
+	TypeDocument   string
+	DocumentNumber string `gorm:"unique;not null"`
+	PhoneNumber    string `gorm:"not null"`
+	Address        string
+	UserID         uint
+	User           User `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+type ClientJson struct {
 	ID             uint
 	Name           string
 	LastName       string
 	TypeDocument   string
+	Email          string
+	Password       string
 	DocumentNumber string
 	PhoneNumber    string
 	Address        string
-	UserID         uint
-	User
+	UserId         uint
+}
+
+func ToClient(c *Client) *ClientJson {
+	return &ClientJson{
+		ID:             c.ID,
+		Name:           c.Name,
+		LastName:       c.LastName,
+		TypeDocument:   c.TypeDocument,
+		Email:          c.User.Email,
+		DocumentNumber: c.DocumentNumber,
+		PhoneNumber:    c.PhoneNumber,
+		Address:        c.Address,
+		UserId:         c.UserID,
+	}
 }

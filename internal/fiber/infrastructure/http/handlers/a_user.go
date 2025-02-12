@@ -3,7 +3,6 @@ package handlers
 import (
 	"inventory/internal/fiber/application"
 	domain "inventory/internal/fiber/domain/entities"
-	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
 	"inventory/pkg/utils"
 
 	"github.com/gofiber/fiber/v3"
@@ -18,7 +17,7 @@ func NewUserHandler(service *application.UserService) *UserHandler {
 }
 
 func (h *UserHandler) Register(c fiber.Ctx) error {
-	var userData modelsgorm.UserGormJson
+	var userData domain.UserGormJson
 
 	if err := c.Bind().Body(&userData); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

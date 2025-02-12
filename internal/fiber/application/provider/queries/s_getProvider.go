@@ -4,9 +4,7 @@ import (
 	"fmt"
 	domain "inventory/internal/fiber/domain/entities"
 	"inventory/internal/fiber/domain/repositories"
-	"inventory/internal/fiber/infrastructure/persistence/mappers"
-	modelsgorm "inventory/internal/fiber/infrastructure/persistence/modelsGORM"
-	"inventory/internal/fiber/infrastructure/persistence/repository"
+	"inventory/internal/fiber/infrastructure/repository"
 	"inventory/pkg/utils"
 )
 
@@ -28,21 +26,17 @@ func (s *GetProviderService) GetALL(pagination *utils.Pagination) (*utils.Pagina
 	if err != nil {
 		return nil, fmt.Errorf("error to get provider")
 	}
-	var providersGorm []modelsgorm.Provider
-
-	paginationResult, err := s.paginationRep.GetPaginatedResults(query, pagination, &providersGorm)
+	var providers []domain.Provider
+	var providerJson []domain.ProviderJson
+	paginationResult, err := s.paginationRep.GetPaginatedResults(query, pagination, &providers)
 	if err != nil {
 		return nil, fmt.Errorf("error to get pagintaion")
 	}
-
-	providers := make([]domain.Provider, 0, len(providersGorm))
-	for _, providerGorm := range providersGorm {
-		mapped := mappers.FromProviderGorm(&providerGorm)
-		if mapped != nil {
-			providers = append(providers, *mapped)
-		}
+	for _, provider := range providers {
+		providerJson = append(providerJson, *domain.ToProvider(&provider))
 	}
-	paginationResult.Data = providers
+
+	paginationResult.Data = providerJson
 
 	return paginationResult, nil
 }
