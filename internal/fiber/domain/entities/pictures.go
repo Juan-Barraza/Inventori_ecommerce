@@ -1,6 +1,5 @@
 package domain
 
-
 import "gorm.io/gorm"
 
 type PicturesProduct struct {
