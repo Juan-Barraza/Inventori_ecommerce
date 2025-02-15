@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"inventory/pkg"
 	"inventory/pkg/utils"
 
@@ -17,6 +18,10 @@ func NewPaginationRepository(db *pkg.Database) *PaginationRepository {
 
 func (r *PaginationRepository) GetPaginatedResults(query *gorm.DB, pagination *utils.Pagination, result interface{}) (*utils.Pagination, error) {
 	var totalItems int64
+
+	if query == nil {
+		return nil, fmt.Errorf("query is nil")
+	}
 
 	if err := query.Count(&totalItems).Error; err != nil {
 		return nil, err
