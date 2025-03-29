@@ -30,6 +30,7 @@ func SetRoutes(app *fiber.App, db *pkg.Database) {
 	SetClientRoutes(Apiv1, db)
 	SetProviderRoutes(Apiv1, db)
 	SetProductsRoutes(Apiv1, db)
+	SetCategoryRoutes(Apiv1, db)
 	app.Get("/media*", static.New("./media"))
 	Apiv1.Use(middleware.VerifyTokenMiddleware)
 

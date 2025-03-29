@@ -14,3 +14,10 @@ type CategoryJson struct {
 	Description  string
 }
 
+func ToCategory(c *Category) *CategoryJson {
+	return &CategoryJson{
+		ID:           c.ID,
+		CategoryName: c.CategoryName,
+		Description:  c.Description,
+	}
+}

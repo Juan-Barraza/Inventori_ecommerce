@@ -176,5 +176,5 @@ func (h *ProductHandler) UpdateProduct(c fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(201).JSON(fiber.Map{"message": "updated sucessfully"})
+	return c.Status(200).JSON(fiber.Map{"message": "updated sucessfully"})
 }
