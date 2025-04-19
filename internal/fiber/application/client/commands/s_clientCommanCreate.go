@@ -58,6 +58,7 @@ func (s *CreateClientCommandsService) CreateClient(client *domain.Client) error 
 
 	log.Println("si se creo el user")
 	client.UserID = user.ID
+	client.User = domain.User{}
 	if client.UserID == 0 {
 		println("the user not asignement")
 	}

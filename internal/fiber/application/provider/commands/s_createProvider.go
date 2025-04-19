@@ -51,12 +51,15 @@ func (s *CreateProviderService) CreateProvider(providerData *domain.Provider) er
 		Password: password,
 	}
 	err = s.userRep.Create(user)
+	fmt.Println("nuevo usuario ID:", user.ID)
 	if err != nil {
 		log.Println("no se creo el user")
 		return fmt.Errorf("can not be create user")
 	}
 
 	providerData.UserID = user.ID
+	log.Printf("→ providerData.UserID = %d\n", providerData.UserID)
+	providerData.User = domain.User{}
 	if providerData.UserID == 0 {
 		println("The user not asignement")
 	}
