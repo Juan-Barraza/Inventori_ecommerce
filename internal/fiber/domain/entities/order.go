@@ -24,4 +24,31 @@ type OrderJson struct {
 	Date        time.Time
 	Description string
 	ClientId    uint
+	Products    []ProductJson
+}
+
+type OrderDTO struct {
+	ID          uint
+	Status      string
+	Quantity    int
+	Date        time.Time
+	Description string
+	ClientId    uint
+	Products    []uint
+}
+
+func ToOrder(p *Order) *OrderJson {
+	prods := make([]ProductJson, len(p.Products))
+	for i, prod := range p.Products {
+		prods[i] = *ToProduct(&prod)
+	}
+	return &OrderJson{
+		ID:          p.ID,
+		Status:      p.Status,
+		Quantity:    p.Quantity,
+		Date:        p.Date,
+		Description: p.Description,
+		ClientId:    p.ClientId,
+		Products:    prods,
+	}
 }

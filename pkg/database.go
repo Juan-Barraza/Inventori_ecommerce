@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"fmt"
+	domain "inventory/internal/fiber/domain/entities"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -10,6 +11,10 @@ import (
 
 type Database struct {
 	DB *gorm.DB
+}
+
+func (d *Database) Create(order *domain.Order) {
+	panic("unimplemented")
 }
 
 func NewDatabase() (*Database, error) {
@@ -34,7 +39,7 @@ func NewDatabase() (*Database, error) {
 }
 
 func (d *Database) WithTransaction(fc func(tx *Database) error) error {
-    return d.DB.Transaction(func(tx *gorm.DB) error {
-        return fc(&Database{DB: tx})
-    })
+	return d.DB.Transaction(func(tx *gorm.DB) error {
+		return fc(&Database{DB: tx})
+	})
 }

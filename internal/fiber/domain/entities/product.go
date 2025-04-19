@@ -39,3 +39,15 @@ func ToProduct(p *Product) *ProductJson {
 		ProviderId:  p.ProviderId,
 	}
 }
+
+func ToProductJson(p *ProductJson) *Product {
+	return &Product{
+		Name:        p.Name,
+		Description: p.Description,
+		Price:       p.Price,
+		Images:      p.Image,
+		Stock:       p.Stock,
+		CategoryId:  p.CategoryId,
+		ProviderId:  p.ProviderId,
+	}
+}
