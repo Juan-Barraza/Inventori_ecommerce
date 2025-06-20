@@ -2,14 +2,19 @@ package config
 
 import (
 	"inventory/pkg"
-	"log"
-	"github.com/joho/godotenv"
+	"os"
+	"time"
+)
+
+var (
+	PayPalClientID     = os.Getenv("PAYPAL_CLIENT_ID")
+	PayPalSecret       = os.Getenv("PAYPAL_SECRET")
+	PayPalAPIBase      = os.Getenv("PAYPAL_API_BASE") // sandbox o live
+	PayPalWebhookID    = os.Getenv("PAYPAL_WEBHOOK_ID")
+	PayPalVerifyTicker = time.Minute * 5
 )
 
 func SetConfig() (*pkg.Database, error) {
-	if err := godotenv.Load(); err != nil {
-		log.Printf("failed to load a file env: %v", err)
-	}
 
 	db, err := CreateTables()
 	if err != nil {

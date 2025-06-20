@@ -13,7 +13,7 @@ var secretKey = []byte("JWT-TOKEN-GO")
 func CreateToken(user domain.UserGormJson, cantDuration int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"username": string(user.ID),
+			"username": string(rune(user.ID)),
 			"exp":      time.Now().Add(time.Hour * time.Duration(cantDuration)).Unix(),
 			"iat":      time.Now().Unix(),
 			"email":    user.Email,
