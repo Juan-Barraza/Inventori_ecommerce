@@ -26,19 +26,20 @@ func CreateTables() (*pkg.Database, error) {
 	)
 
 	if migratesErr != nil {
-		return nil, migratesErr
+		log.Fatalf("Error al crear las tablas: %v", migratesErr)
+	} else {
+		log.Println("Tablas creadas exitosamente")
 	}
 
-	log.Println("Conexión exitosa a la base de datos")
+	// log.Println("Conexión exitosa a la base de datos")
 
 	logger := log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
 	conexionLog, _ := fmt.Printf(
 		"Me conecte a la base de datos PostgreSQL, en el servidor %s por el puerto %s ",
-		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
 	)
 
-	log.Println(conexionLog)
 	logger.Println(conexionLog)
 
 	return db, nil
