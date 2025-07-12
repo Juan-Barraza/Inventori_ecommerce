@@ -1,28 +1,44 @@
 package queries
 
 import (
+	"fmt"
 	domain "inventory/internal/fiber/domain/entities"
 	"inventory/internal/fiber/domain/repositories"
+	"inventory/internal/fiber/infrastructure/repository"
+	"inventory/pkg/utils"
 )
 
 type ClientQuerysService struct {
-	clientRepo repositories.IClientRepository
+	clientRepo    repositories.IClientRepository
+	paginationRep *repository.PaginationRepository
 }
 
-func NewClientQuerysService(clientRepo repositories.IClientRepository) *ClientQuerysService {
+func NewClientQuerysService(clientRepo repositories.IClientRepository,
+	paginationRep *repository.PaginationRepository,
+) *ClientQuerysService {
 	return &ClientQuerysService{
-		clientRepo: clientRepo,
+		clientRepo:    clientRepo,
+		paginationRep: paginationRep,
 	}
 }
 
-func (s *ClientQuerysService) GetAll() ([]domain.Client, error) {
-	clients, err := s.clientRepo.GetAll()
+func (s *ClientQuerysService) GetAll(pagination *utils.Pagination) (*utils.Pagination, error) {
+	query, err := s.clientRepo.GetAll()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error to get client")
 	}
-	if clients == nil {
-		clients = []domain.Client{}
+	var clients []domain.Client
+	var clientsJson []domain.ClientResponse
+	paginationResult, err := s.paginationRep.GetPaginatedResults(query, pagination, &clients)
+	if err != nil {
+		return nil, fmt.Errorf("error to get pagintaion")
 	}
 
-	return clients, nil
+	for _, client := range clients {
+		clientsJson = append(clientsJson, *domain.ToClient(&client))
+	}
+
+	paginationResult.Data = clientsJson
+
+	return paginationResult, nil
 }

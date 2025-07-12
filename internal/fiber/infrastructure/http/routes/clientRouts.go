@@ -13,10 +13,11 @@ import (
 func SetClientRoutes(apiV1 fiber.Router, db *pkg.Database) {
 	userRepo := repository.NewUserRepository(db)
 	clientRepo := repository.NewClientRepository(db)
+	paginationRepo := repository.NewPaginationRepository(db)
 	createClientS := commands.NewClientCommandsService(clientRepo, userRepo)
 	updateClientS := commands.NewUpdateClientCommandsService(clientRepo, userRepo)
 	deleteClientS := commands.NewDeleteClientCommandsService(clientRepo, userRepo)
-	getAllClientS := queries.NewClientQuerysService(clientRepo)
+	getAllClientS := queries.NewClientQuerysService(clientRepo, paginationRepo)
 	clientHandler := handlers.NewClientHandler(
 		createClientS,
 		updateClientS,

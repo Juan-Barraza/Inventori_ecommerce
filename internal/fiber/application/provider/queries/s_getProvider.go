@@ -27,7 +27,7 @@ func (s *GetProviderService) GetALL(pagination *utils.Pagination) (*utils.Pagina
 		return nil, fmt.Errorf("error to get provider")
 	}
 	var providers []domain.Provider
-	var providerJson []domain.ProviderJson
+	var providerJson []domain.ProviderResponse
 	paginationResult, err := s.paginationRep.GetPaginatedResults(query, pagination, &providers)
 	if err != nil {
 		return nil, fmt.Errorf("error to get pagintaion")

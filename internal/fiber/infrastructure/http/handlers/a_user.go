@@ -43,7 +43,8 @@ func (h *UserHandler) Register(c fiber.Ctx) error {
 }
 
 func (h *UserHandler) GetAllUsers(c fiber.Ctx) error {
-	users, err := h.userService.GelAll()
+	pagination := c.Locals("pagination").(*utils.Pagination)
+	users, err := h.userService.GelAll(pagination)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Users not conted",

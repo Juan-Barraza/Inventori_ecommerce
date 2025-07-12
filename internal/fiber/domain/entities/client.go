@@ -27,8 +27,20 @@ type ClientJson struct {
 	UserId         uint
 }
 
-func ToClient(c *Client) *ClientJson {
-	return &ClientJson{
+type ClientResponse struct {
+	ID             uint
+	Name           string
+	LastName       string
+	TypeDocument   string
+	Email          string
+	DocumentNumber string
+	PhoneNumber    string
+	Address        string
+	UserId         uint
+}
+
+func ToClient(c *Client) *ClientResponse {
+	return &ClientResponse{
 		ID:             c.ID,
 		Name:           c.Name,
 		LastName:       c.LastName,

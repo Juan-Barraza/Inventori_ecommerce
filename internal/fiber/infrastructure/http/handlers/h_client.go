@@ -4,6 +4,7 @@ import (
 	"inventory/internal/fiber/application/client/commands"
 	"inventory/internal/fiber/application/client/queries"
 	domain "inventory/internal/fiber/domain/entities"
+	"inventory/pkg/utils"
 	"strconv"
 
 	"github.com/gofiber/fiber/v3"
@@ -61,14 +62,19 @@ func (h *ClienHandler) CreateClient(c fiber.Ctx) error {
 }
 
 func (h *ClienHandler) GetAllClients(c fiber.Ctx) error {
-	clients, err := h.getAllClients.GetAll()
+	pagination := c.Locals("pagination").(*utils.Pagination)
+
+	paginationResult, err := h.getAllClients.GetAll(pagination)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
+	if paginationResult == nil {
+		return c.Status(200).JSON(make([]domain.Client, 0))
+	}
 
-	return c.Status(200).JSON(clients)
+	return c.Status(200).JSON(paginationResult)
 }
 
 func (h *ClienHandler) ClientUpdate(c fiber.Ctx) error {

@@ -3,6 +3,8 @@ package repository
 import (
 	domain "inventory/internal/fiber/domain/entities"
 	"inventory/pkg"
+
+	"gorm.io/gorm"
 )
 
 type UserRepository struct {
@@ -20,14 +22,10 @@ func (r *UserRepository) Create(user *domain.User) error {
 	return nil
 }
 
-func (r *UserRepository) GetAll() ([]domain.User, error) {
-	var users []domain.User
-	err := r.db.DB.Model(domain.User{}).Find(&users).Error
-	if err != nil {
-		return nil, err
-	}
+func (r *UserRepository) GetAll() (*gorm.DB, error) {
+	query := r.db.DB.Model(&domain.User{})
 
-	return users, nil
+	return query, nil
 }
 
 func (r *UserRepository) Update(user *domain.User) error {

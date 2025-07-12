@@ -11,7 +11,8 @@ import (
 
 func SetUserRoutes(apiV1 fiber.Router, db *pkg.Database) {
 	userRepo := repository.NewUserRepository(db)
-	userService := application.NewUserService(userRepo)
+	paginationRep := repository.NewPaginationRepository(db)
+	userService := application.NewUserService(userRepo, paginationRep)
 	userHandler := handlers.NewUserHandler(
 		userService,
 	)
