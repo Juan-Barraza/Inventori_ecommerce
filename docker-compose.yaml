@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   go-app:
     build:
@@ -30,21 +28,8 @@ services:
     networks:
       - backend
 
-  pgadmin:
-    image: dpage/pgadmin4
-    ports:
-      - '5050:80'
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin/data
-    networks:
-      - backend
-
 volumes:
   postgres_data:
-  pgadmin_data:
 
 networks:
   backend:

@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/static"
 )
 
-func SetRoutes(app *fiber.App, db *pkg.Database) {
+func SetRoutes(app *fiber.App, db *pkg.Database) error {
 	app.Use(middleware.PaginationMiddleware)
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
@@ -32,7 +32,9 @@ func SetRoutes(app *fiber.App, db *pkg.Database) {
 	SetProductsRoutes(Apiv1, db)
 	SetCategoryRoutes(Apiv1, db)
 	SetOrderRoutes(Apiv1, db)
+	SetupTransactionRoutes(Apiv1, db)
 	app.Get("/media*", static.New("./media"))
-	Apiv1.Use(middleware.VerifyTokenMiddleware)
+	// Apiv1.Use(middleware.VerifyTokenMiddleware)
 
+	return nil
 }

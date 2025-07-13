@@ -3,6 +3,8 @@ package repository
 import (
 	domain "inventory/internal/fiber/domain/entities"
 	"inventory/pkg"
+
+	"gorm.io/gorm"
 )
 
 type ClientRepository struct {
@@ -17,14 +19,10 @@ func (r *ClientRepository) Create(client *domain.Client) error {
 	return r.db.DB.Create(client).Error
 }
 
-func (r *ClientRepository) GetAll() ([]domain.Client, error) {
-	var clients []domain.Client
-	err := r.db.DB.Preload("User").Find(&clients).Error
-	if err != nil {
-		return nil, err
-	}
+func (r *ClientRepository) GetAll() (*gorm.DB, error) {
+	query := r.db.DB.Model(&domain.Client{}).Preload("User")
 
-	return clients, nil
+	return query, nil
 }
 
 func (r *ClientRepository) GetById(id uint) (*domain.Client, error) {

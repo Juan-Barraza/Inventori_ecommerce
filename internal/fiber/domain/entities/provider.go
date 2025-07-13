@@ -23,8 +23,18 @@ type ProviderJson struct {
 	UserID        uint
 }
 
-func ToProvider(p *Provider) *ProviderJson {
-	return &ProviderJson{
+type ProviderResponse struct {
+	ID            uint
+	Name          string
+	Address       string
+	Email         string
+	PhoneNumber   string
+	TypeOfProduct string
+	UserID        uint
+}
+
+func ToProvider(p *Provider) *ProviderResponse {
+	return &ProviderResponse{
 		ID:            p.ID,
 		Name:          p.Name,
 		Email:         p.User.Email,

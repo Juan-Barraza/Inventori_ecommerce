@@ -13,3 +13,15 @@ type UserGormJson struct {
 	Email    string
 	Password string
 }
+
+type UserResponse struct {
+	ID    uint
+	Email string
+}
+
+func ToUser(u *User) *UserResponse {
+	return &UserResponse{
+		ID:    u.ID,
+		Email: u.Email,
+	}
+}
