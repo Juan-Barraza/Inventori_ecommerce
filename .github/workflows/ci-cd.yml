@@ -37,7 +37,7 @@ jobs:
           key: ${{ secrets.STAGING_SSH_KEY }}
           script: |
             cd /home/ubuntu/Inventori_ecommerce
-            docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+            docker-compose -f docker-compose.dev.yml up -d --build
 
   approve-production:
     needs: deploy-staging
@@ -83,7 +83,7 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
             cd /home/ubuntu/Inventori_ecommerce
-            docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+            docker-compose -f docker-compose.prod.yml up -d --build
 
   rollback:
     if: ${{ failure() }} # Solo si falla deploy-production
