@@ -22,7 +22,10 @@ func main() {
 	if err != nil {
 		log.Fatal("error al configurar fiber")
 	}
-	routes.SetRoutes(app, db)
+
+	if err := routes.SetRoutes(app, db); err != nil {
+		log.Fatal("Error configurando rutas:")
+	}
 
 	contx, sleep := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer sleep()

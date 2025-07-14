@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run Linter
+      - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.57.2 
+          args: --timeout=5m --out-format=colored-line-number
 
   test:
     needs: lint
@@ -71,7 +74,7 @@ jobs:
           script: |
             cd /home/ubuntu/production-app
             zip -r backup_code_$(date +%Y-%m-%d).zip . -x "*.git*" "node_modules/*"
-        
+
       - name: Deploy to Production
         uses: appleboy/ssh-action@master
         with:

@@ -1,0 +1,11 @@
+linters:
+  enable:
+    - errcheck
+  disable:
+    - wsl  # Opcional: deshabilita linters innecesarios
+
+issues:
+  exclude-use-default: false
+
+output:
+  format: colored-line-number  # Formato recomendado
