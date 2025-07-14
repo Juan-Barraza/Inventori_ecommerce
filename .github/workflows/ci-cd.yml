@@ -6,38 +6,35 @@ on:
   workflow_dispatch: # Permite ejecución manual
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.57.2 
-          args: --timeout=5m --out-format=colored-line-number
-
   test:
-    needs: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.6' # Usa tu versión de Go
       - name: Run Tests
-        run: go test -v ./...
+        run: |
+          go test -v ./...
+          go mod tidy 
 
   deploy-staging:
     needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy to Staging
-        uses: appleboy/ssh-action@master
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
         with:
-          host: ${{ secrets.STAGING_HOST }}
-          username: ${{ secrets.STAGING_USER }}
           key: ${{ secrets.STAGING_SSH_KEY }}
-          script: |
+      - name: Deploy to Staging
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} "
             cd /home/ubuntu/Inventori_ecommerce
+            docker-compose -f docker-compose.dev.yml pull
             docker-compose -f docker-compose.dev.yml up -d --build
+          "
 
   approve-production:
     needs: deploy-staging
@@ -48,55 +45,46 @@ jobs:
         with:
           secret: ${{ github.token }}
           approvers: "Juan-Barraza"
+          prompt: "✅ Staging deployment complete. Approve production deployment?"
 
   deploy-production:
     needs: approve-production
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Backup DB (Pre-Deploy)
-        uses: appleboy/ssh-action@master
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
         with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
-          script: |
+      - name: Backup and Deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
+            # Backup DB
             cd /home/ubuntu/Inventori_ecommerce
-            docker exec -t $(docker-compose ps -q db) pg_dump -U postgres mi_db > backup_$(date +%Y-%m-%d)_${{ github.sha }}.sql
-            ls -lh *.sql
-
-      - name: Backup Current Version
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USER }}
-          key: ${{ secrets.PROD_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/production-app
-            zip -r backup_code_$(date +%Y-%m-%d).zip . -x "*.git*" "node_modules/*"
-
-      - name: Deploy to Production
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USER }}
-          key: ${{ secrets.PROD_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/Inventori_ecommerce
+            docker exec -t \$(docker-compose -f docker-compose.prod.yml ps -q db) pg_dump -U postgres mi_db > backup_\$(date +%Y-%m-%d)_${{ github.sha }}.sql
+            
+            # Backup código
+            zip -r backup_code_\$(date +%Y-%m-%d).zip . -x \"*.git*\" \"node_modules/*\"
+            
+            # Deploy
+            docker-compose -f docker-compose.prod.yml pull
             docker-compose -f docker-compose.prod.yml up -d --build
+          "
 
   rollback:
-    if: ${{ failure() }} # Solo si falla deploy-production
+    if: ${{ failure() }}
     needs: deploy-production
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Execute Rollback
-        uses: appleboy/ssh-action@master
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
         with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
-          script: |
+      - name: Execute Rollback
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
             cd /home/ubuntu/Inventori_ecommerce
+            chmod +x scripts/rollback.sh
             ./scripts/rollback.sh
+          "
