@@ -1,0 +1,99 @@
+name: CI/CD with Rollback
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch: # Permite ejecución manual
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Linter
+        uses: golangci/golangci-lint-action@v3
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Tests
+        run: go test -v ./...
+
+  deploy-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Staging
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/Inventori_ecommerce
+            docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+
+  approve-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.token }}
+          approvers: "Juan-Barraza"
+
+  deploy-production:
+    needs: approve-production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Backup DB (Pre-Deploy)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/Inventori_ecommerce
+            docker exec -t $(docker-compose ps -q db) pg_dump -U postgres mi_db > backup_$(date +%Y-%m-%d)_${{ github.sha }}.sql
+            ls -lh *.sql
+
+      - name: Backup Current Version
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/production-app
+            zip -r backup_code_$(date +%Y-%m-%d).zip . -x "*.git*" "node_modules/*"
+        
+      - name: Deploy to Production
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/Inventori_ecommerce
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+  rollback:
+    if: ${{ failure() }} # Solo si falla deploy-production
+    needs: deploy-production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Execute Rollback
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/Inventori_ecommerce
+            ./scripts/rollback.sh
