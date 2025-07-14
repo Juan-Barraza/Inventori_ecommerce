@@ -39,7 +39,10 @@ func (c *CaptureOrderPaypal) CaptureOrderPaypal(orderId uint) (string, error) {
 
 	if status == "COMPLETED" && tx.Status == "PENDING" {
 		tx.Status = status
-		c.txRepo.Update(tx)
+		err := c.txRepo.Update(tx)
+		if err != nil {
+			return "", fmt.Errorf("error to update status")
+		}
 	}
 
 	return status, nil

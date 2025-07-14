@@ -67,7 +67,10 @@ func (c *CreateTransactionCommand) ProcessPaymentTransaction(ctx context.Context
 		}
 		tx.TransactionId = resp.TransactionID
 		tx.Status = "PENDING"
-		c.txRepo.Update(tx)
+		err := c.txRepo.Update(tx)
+		if err != nil {
+			return "", "", fmt.Errorf("error to update status")
+		}
 	}
 
 	return tx.Status, *resp.ReturnURL, nil
