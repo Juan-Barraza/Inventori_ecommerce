@@ -33,7 +33,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} "
             cd /home/ubuntu/Inventori_ecommerce
-            docker-compose -f docker-compose.dev.yml pull
             docker-compose -f docker-compose.dev.yml up -d --build
           "
 
@@ -69,7 +68,6 @@ jobs:
             zip -r backup_code_\$(date +%Y-%m-%d).zip . -x \"*.git*\" \"node_modules/*\"
             
             # Deploy
-            docker-compose -f docker-compose.prod.yml pull
             docker-compose -f docker-compose.prod.yml up -d --build
           "
 
