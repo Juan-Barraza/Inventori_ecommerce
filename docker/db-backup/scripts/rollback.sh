@@ -23,10 +23,10 @@ rsync -a /home/ubuntu/Inventori_ecommerce/ /home/ubuntu/Inventori_ecommerce/
 rm -rf /home/ubuntu/Inventori_ecommerce
 
 # 4. Restaurar DB
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml run --rm db \
+docker-compose -f docker-compose.prod.yml run --rm db \
     psql -U postgres -d mi_db -f "$LATEST_DB_BACKUP"
 
 # 5. Reconstruir y levantar
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker-compose -f docker-compose.prod.yml up -d --build
 
 echo "✅ Rollback completado. Versión anterior restaurada."

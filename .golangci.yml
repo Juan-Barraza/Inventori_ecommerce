@@ -1,11 +1,29 @@
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
 linters:
   enable:
+    - typecheck
     - errcheck
+    - govet
+    - staticcheck
   disable:
-    - wsl  # Opcional: deshabilita linters innecesarios
+    - wsl
+    - gochecknoinits
+
+linters-settings:
+  typecheck:
+    compiler: gc
+    build-tags: []
+    skip-files:
+      - "internal/fiber/domain/entities/*.go"
 
 issues:
   exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
 
 output:
-  format: colored-line-number  # Formato recomendado
+  formats:
+    - colored-line-number
