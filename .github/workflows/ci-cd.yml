@@ -25,15 +25,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
+        uses: webfactory/ssh-agent@v0.7.0  # Mejor acción para manejo de claves
         with:
-          key: ${{ secrets.STAGING_SSH_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+          ssh-private-key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+      - name: Add to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
       - name: Deploy to Staging
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} "
-            cd /home/ubuntu/Inventori_ecommerce && \
-            git pull origin main && \
+            cd /home/${{ secrets.STAGING_USER }}/Inventori_ecommerce && \
+            git fetch origin main && \
+            git reset --hard origin/main && \
             docker-compose -f docker-compose.dev.yml down && \
             docker-compose -f docker-compose.dev.yml up -d --build
           "
@@ -51,19 +55,30 @@ jobs:
 
   deploy-production:
     needs: approve-production
+    if: success() 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
+        uses: webfactory/ssh-agent@v0.7.0
         with:
-          key: ${{ secrets.PROD_SSH_KEY }}
-          known_hosts: ${{ secrets.PROD_KNOWN_HOSTS }}
+          ssh-private-key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+      - name: Add to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PROD_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
       - name: Deploy to production
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
-            cd /home/ubuntu/Inventori_ecommerce && \
-            git pull origin main && \
+            cd /home/${{ secrets.PROD_USER }}/Inventori_ecommerce && \
+            git fetch origin main && \
+            git reset --hard origin/main && \
             docker-compose -f docker-compose.prod.yml down && \
             docker-compose -f docker-compose.prod.yml up -d --build
+          "
+      - name: Verify deployment
+        run: |
+          ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
+            docker ps && \
+            curl -sSf http://localhost:8080/healthcheck || exit 1
           "
