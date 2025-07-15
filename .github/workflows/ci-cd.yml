@@ -6,7 +6,7 @@ on:
   workflow_dispatch: # Permite ejecución manual
 
 jobs:
-  test: # Permite los test que esten disponibles 
+  test: # Permite los test que esten disponibles
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
