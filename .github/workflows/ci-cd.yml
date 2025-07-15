@@ -59,7 +59,7 @@ jobs:
         with:
           key: ${{ secrets.PROD_SSH_KEY }}
           known_hosts: ${{ secrets.PROD_KNOWN_HOSTS }}
-      - name: Backup and Deploy
+      - name: Deploy to production
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
             cd /home/ubuntu/Inventori_ecommerce && \
