@@ -34,7 +34,7 @@ jobs:
           echo "${{ secrets.STAGING_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
       - name: Deploy to Staging
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} "
+          ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} "
             cd /home/${{ secrets.STAGING_USER }}/Inventori_ecommerce && \
             git fetch origin main && \
             git reset --hard origin/main && \
