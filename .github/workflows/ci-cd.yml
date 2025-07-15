@@ -13,7 +13,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.23.6" # Usa tu versión de Go
+          go-version: "1.23.6" 
       - name: Run Tests
         run: |
           go test -v ./...
