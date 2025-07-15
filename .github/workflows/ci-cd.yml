@@ -13,11 +13,11 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23.6' # Usa tu versión de Go
+          go-version: "1.23.6" # Usa tu versión de Go
       - name: Run Tests
         run: |
           go test -v ./...
-          go mod tidy 
+          go mod tidy
 
   deploy-staging:
     needs: test
@@ -62,33 +62,8 @@ jobs:
       - name: Backup and Deploy
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
-            # Backup DB
-            cd /home/ubuntu/Inventori_ecommerce
-            docker exec -t \$(docker-compose -f docker-compose.prod.yml ps -q db) pg_dump -U postgres mi_db > backup_\$(date +%Y-%m-%d)_${{ github.sha }}.sql
-            
-            # Backup código
-            zip -r backup_code_\$(date +%Y-%m-%d).zip . -x \"*.git*\" \"node_modules/*\"
-            
-            # Deploy
-            docker-compose -f docker-compose.prod.yml up -d --build
-          "
-
-  rollback:
-    if: ${{ failure() }}
-    needs: deploy-production
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.PROD_SSH_KEY }}
-          known_hosts: ${{ secrets.PROD_KNOWN_HOSTS }}
-
-      - name: Execute Rollback
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
             cd /home/ubuntu/Inventori_ecommerce && \
-            chmod +x scripts/rollback.sh && \
-            ./scripts/rollback.sh
+            git pull origin main && \
+            docker-compose -f docker-compose.prod.yml down && \
+            docker-compose -f docker-compose.prod.yml up -d --build
           "
