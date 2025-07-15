@@ -1,4 +1,4 @@
-name: CI/CD with Rollback
+name: CI/CD Staging and Production
 
 on:
   push:
